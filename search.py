@@ -88,6 +88,44 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
 
+    from util import Stack
+    
+    stack = Stack()
+
+    visited = set() # Visited states (explored)
+    path = [] # Path from starting state
+
+    # Checking if starting state is goal state
+    if problem.isGoalState(problem.getStartState()):
+        return []
+
+    # Push the starting state to start the dfs loop below #
+    stack.push((problem.getStartState(), path))
+
+    while(True):
+
+        
+        if stack.isEmpty():
+            return []
+
+        state, path = stack.pop() 
+        visited.add(state) 
+
+        
+        if problem.isGoalState(state):
+            return path
+
+        
+        succ = problem.getSuccessors(state)
+
+        
+        for item in succ:
+            print(item[0],item[1],item[2])
+            if item[0] not in visited:
+                newPath = path + [item[1]]
+                stack.push((item[0], newPath))
+        print("end of for loop")
+                
 
     
     util.raiseNotDefined()
