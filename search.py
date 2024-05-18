@@ -176,6 +176,56 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+
+    from util import PriorityQueue
+
+    pqueue = PriorityQueue() #initialize priority queue  
+
+    visited = set() #visited states
+    path = [] #the path of actions to reach from start to goal
+
+    if problem.isGoalState(problem.getStartState()):#if start state is the same as goal state
+        return []
+    
+    pqueue.push((problem.getStartState(), path), 0)
+
+    while(True):
+            
+            
+            if pqueue.isEmpty():
+                return []
+    
+            state, path = pqueue.pop() 
+            visited.add(state) 
+    
+            
+            if problem.isGoalState(state):
+                return path
+    
+            #get the successors of the state
+            succ = problem.getSuccessors(state)
+    
+            
+            for item1 in succ:
+                if item1[0] not in visited and item1[0] not in (item2[2][0] for item2 in pqueue.heap):
+                    newPath = path.copy()
+                    newPath.append(item1[1])
+                    cost = problem.getCostOfActions(newPath)
+                    pqueue.push((item1[0], newPath), cost)
+                
+                # If we find lower cost path for same state, update pqueue with lower cost path
+                elif item1[0] in (item2[2][0] for item2 in pqueue.heap):
+                    for item2 in pqueue.heap:
+                        if item2[2][0] == item1[0]:
+                            oldCost = problem.getCostOfActions(item2[2][1])
+
+                    newCost = problem.getCostOfActions(path + [item1[1]])
+
+                    if oldCost > newCost:
+                        newPath = path + [item1[1]]
+                        pqueue.update((item1[0], newPath), newCost)
+
+
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -188,6 +238,50 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+
+    from util import PriorityQueue
+
+    pqueue=PriorityQueue() #initialize priority queue
+
+    visited=set() #visited states   
+    path=[] #the path of actions to reach from start to goal
+
+    if problem.isGoalState(problem.getStartState()):
+        return []
+    
+    pqueue.push((problem.getStartState(), path), heuristic(problem.getStartState(), problem))
+
+    while(True):
+
+        
+        if pqueue.isEmpty():
+            return []
+
+        state, path = pqueue.pop() 
+
+        
+        if state in visited:
+            continue
+        
+        visited.add(state) 
+
+        
+        if problem.isGoalState(state):
+            return path
+
+        
+        succ = problem.getSuccessors(state)
+
+        
+        for item in succ:
+            if item[0] not in visited:
+
+                newPath = path + [item[1]] # Fix new path
+                g_cost = problem.getCostOfActions(newPath)
+                h_cost = heuristic(item[0], problem)
+                f_cost = g_cost + h_cost
+                pqueue.push((item[0], newPath), f_cost)
+
     util.raiseNotDefined()
 
 
