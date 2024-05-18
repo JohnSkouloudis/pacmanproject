@@ -90,16 +90,16 @@ def depthFirstSearch(problem):
 
     from util import Stack
     
-    stack = Stack()
+    stack = Stack() #initialize stack
 
-    visited = set() # Visited states (explored)
-    path = [] # Path from starting state
+    visited = set() #visited states
+    path = [] #the path of actions to reach from start to goal
 
-    # Checking if starting state is goal state
-    if problem.isGoalState(problem.getStartState()):
+    
+    if problem.isGoalState(problem.getStartState()): #if start state is the same as goal state
         return []
 
-    # Push the starting state to start the dfs loop below #
+    
     stack.push((problem.getStartState(), path))
 
     while(True):
@@ -115,15 +115,16 @@ def depthFirstSearch(problem):
         if problem.isGoalState(state):
             return path
 
-        
+        #get the successors of the state
         succ = problem.getSuccessors(state)
 
         
         for item in succ:
             print(item[0],item[1],item[2])
-            if item[0] not in visited:
-                newPath = path + [item[1]]
-                stack.push((item[0], newPath))
+            if item[0] not in visited: #if the state has not been visited
+                newPath = path.copy()
+                newPath.append(item[1]) #add the succ state to the path
+                stack.push((item[0], newPath))#push the state and path to the stack
         print("end of for loop")
                 
 
@@ -133,6 +134,43 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+
+    from util import Queue
+    queue=Queue()
+
+    visited = set() # visited states 
+    path = [] #the path of actions to reach from start to goal
+
+    
+    if problem.isGoalState(problem.getStartState()):#if start state is the same as goal state
+        return []
+
+    
+    queue.push((problem.getStartState(), path))
+
+    while(True):
+
+        
+        if queue.isEmpty():
+            return []
+
+        state, path = queue.pop() 
+        visited.add(state) 
+
+        
+        if problem.isGoalState(state):
+            return path
+
+         #get the successors of the state
+        succ = problem.getSuccessors(state)
+
+        
+        for item1 in succ:
+            if item1[0] not in visited and item1[0] not in (item2[0] for item2 in queue.list):#if the state has not been visited and not in the queue
+                newPath = path.copy()
+                newPath.append(item1[1])#add the succ state to the path
+                queue.push((item1[0], newPath))#push the state and path to the queue
+
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
