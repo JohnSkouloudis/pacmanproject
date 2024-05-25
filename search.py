@@ -207,6 +207,7 @@ def uniformCostSearch(problem):
     
             
             for item1 in succ:
+                print(item1[0],item1[1],item1[2])
                 if item1[0] not in visited and item1[0] not in (item2[2][0] for item2 in pqueue.heap):
                     newPath = path.copy()
                     newPath.append(item1[1])

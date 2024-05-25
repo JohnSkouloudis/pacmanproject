@@ -303,6 +303,8 @@ class CornersProblem(search.SearchProblem):
         """
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
+    
+    
 
     def getSuccessors(self, state):
         """
@@ -390,6 +392,9 @@ class FoodSearchProblem:
     def isGoalState(self, state):
         return state[1].count() == 0
 
+    def getGameState(self):
+        return self.startingGameState
+
     def getSuccessors(self, state):
         "Returns successor states, the actions they require, and a cost of 1."
         successors = []
@@ -454,7 +459,22 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    
+
+    foodList = foodGrid.asList()
+
+    from util import manhattanDistance
+    
+    heuristic = 0
+    for pos in foodList:
+       heuristic=max( heuristic, manhattanDistance(position, pos))
+        
+        
+    return heuristic
+
+    
+    
+    
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
