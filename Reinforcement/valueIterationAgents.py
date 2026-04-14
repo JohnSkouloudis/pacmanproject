@@ -158,3 +158,60 @@ class ValueIterationAgent(ValueEstimationAgent):
 
     def getQValue(self, state, action):
         return self.computeQValueFromValues(state, action)
+
+class PrioritizedSweepingValueIterationAgent(ValueIterationAgent):
+    """
+        * Please read learningAgents.py before reading this.*
+
+        A PrioritizedSweepingValueIterationAgent takes a Markov decision process
+        (see mdp.py) on initialization and runs prioritized sweeping value iteration
+        for a given number of iterations using the supplied parameters.
+    """
+    def __init__(self, mdp, discount = 0.9, iterations = 100, theta = 1e-5):
+        """
+          Your prioritized sweeping value iteration agent should take an mdp on
+          construction, run the indicated number of iterations,
+          and then act according to the resulting policy.
+        """
+        self.theta = theta
+        ValueIterationAgent.__init__(self, mdp, discount, iterations)
+
+    def runValueIteration(self):
+        "*** YOUR CODE HERE ***"
+
+        states = self.mdp.getStates()
+
+        predeccessors = {}
+
+        for state in states:
+            predeccessors[state] = set()
+        
+        for state in states:
+            actions = self.mdp.getPossibleActions(state)
+
+            for action in actions:
+                for nextState, prob in self.mdp.getTransitionStatesAndProbs(state,action):
+                    if prob > 0:
+                        predeccessors[nextState].add(state)
+        
+        queue = util.PriorityQueue()
+
+        for state in states:
+            if not self.mdp.isTerminal(state):
+                diff = abs(self.values[state] - max([self.computeQValueFromValues(state, action) for action in self.mdp.getPossibleActions(state)]))
+                queue.push(state, -diff)
+        
+        for i in range(self.iterations):
+
+            if queue.isEmpty():
+                break
+
+            state = queue.pop()
+            self.values[state] = max([self.computeQValueFromValues(state, action) for action in self.mdp.getPossibleActions(state)])
+
+            for p in predeccessors[state]:
+                diff = abs(self.values[p] - max([self.computeQValueFromValues(p, action) for action in self.mdp.getPossibleActions(p)]))
+                if diff > self.theta:
+                    queue.update(p, -diff)
+
+
