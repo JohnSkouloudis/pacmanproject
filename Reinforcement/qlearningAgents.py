@@ -47,6 +47,8 @@ class QLearningAgent(ReinforcementAgent):
         ReinforcementAgent.__init__(self, **args)
 
         "*** YOUR CODE HERE ***"
+        self.qvalues = util.Counter()
+
 
     def getQValue(self, state, action):
         """
@@ -55,7 +57,7 @@ class QLearningAgent(ReinforcementAgent):
           or the Q node value otherwise
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.qvalues[(state, action)]
 
     def computeValueFromQValues(self, state):
         """
@@ -65,7 +67,12 @@ class QLearningAgent(ReinforcementAgent):
           terminal state, you should return a value of 0.0.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        actions = self.getLegalActions(state)
+
+        if not actions:
+            return 0.0
+
+        return max(self.getQValue(state,action) for action in actions)
 
     def computeActionFromQValues(self, state):
         """
@@ -74,7 +81,20 @@ class QLearningAgent(ReinforcementAgent):
           you should return None.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        actions = self.getLegalActions(state)
+
+        if not actions:
+            return None
+        
+        best_actions = []
+        max_q = self.computeValueFromQValues(state)
+
+        for action in actions:
+            if self.getQValue(state,action) == max_q:
+                best_actions.append(action)
+        
+        return random.choice(best_actions)
+
 
     def getAction(self, state):
         """
@@ -103,7 +123,12 @@ class QLearningAgent(ReinforcementAgent):
           it will be called on your behalf
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        q = self.getQValue(state, action)
+
+        next_v = self.computeValueFromQValues(nextState)
+
+        self.qvalues[(state,action)] = (1 - self.alpha) * q + (self.alpha*(reward + (self.discount * next_v)))
+
 
     def getPolicy(self, state):
         return self.computeActionFromQValues(state)
